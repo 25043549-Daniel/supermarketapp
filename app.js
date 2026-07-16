@@ -17,14 +17,22 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'RP738964$',
-    database: 'c237_supermarketdb'
-  });
+const db =mysql.createConnection({
+    host: 'c237-leonard-mysql.mysql.database.azure.com',
+    user: 'c237_023',
+    password: 'c237023@2026!',
+    database: 'c237_023_team3_supermarketdb'
+});
 
-connection.connect((err) => {
+
+// const connection = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'RP738964$',
+//     database: 'c237_supermarketdb'
+//   });
+
+db.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL:', err);
         return;
@@ -95,7 +103,7 @@ app.get('/',  (req, res) => {
 
 app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    db.query('SELECT * FROM products', (error, results) => {
       if (error) throw error;
       res.render('inventory', { products: results, user: req.session.user });
     });
@@ -110,7 +118,7 @@ app.post('/register', validateRegistration, (req, res) => {
     const { username, email, password, address, contact, role } = req.body;
 
     const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    db.query(sql, [username, email, password, address, contact, role], (err, result) => {
         if (err) {
             throw err;
         }
